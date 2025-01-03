@@ -1,0 +1,10 @@
+services:
+  server:
+    working_dir: /app
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    command: npm install
+
+
