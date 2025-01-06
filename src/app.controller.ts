@@ -1,10 +1,12 @@
-import { Controller, Get, HttpStatus, Query, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response } from 'express';
 import { RedditService } from './provider/reddit/reddit.service';
 import { extractPageOfPost } from './provider/reddit/tools';
 import { StorageService } from './provider/storage/storage.service';
 import { temps } from './provider/storage/dtos/Paths';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 @Controller()
 export class AppController {
@@ -47,5 +49,12 @@ export class AppController {
     res.status(HttpStatus.OK).json({
       uuid: uuid,
     });
+  }
+
+  @Get('/api/v1/reddit/:uuid')
+  async show(@Param('uuid') uuid: string, @Res() res: Response) {
+    const path = temps(uuid) + '.json';
+    const file = createReadStream(path);
+    file.pipe(res);
   }
 }
