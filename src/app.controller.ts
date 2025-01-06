@@ -3,12 +3,15 @@ import { AppService } from './app.service';
 import { Response } from 'express';
 import { RedditService } from './provider/reddit/reddit.service';
 import { extractPageOfPost } from './provider/reddit/tools';
+import { StorageService } from './provider/storage/storage.service';
+import { temps } from './provider/storage/dtos/Paths';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly reeditService: RedditService,
+    private readonly storageService: StorageService,
   ) {}
 
   @Get()
@@ -38,6 +41,11 @@ export class AppController {
       author: clearedPost.length > 0 ? clearedPost[0].author : subReddit,
       content: clearedPost,
     };
-    res.status(HttpStatus.OK).json(tempEpub);
+    const uuid = Math.random().toString(36).substring(2, 15);
+    const path = temps(uuid);
+    await this.storageService.save(path + '.json', JSON.stringify(tempEpub));
+    res.status(HttpStatus.OK).json({
+      uuid: uuid,
+    });
   }
 }
