@@ -55,7 +55,6 @@ export class RedditService {
     });
   }
   async findAll(subReddit, criteria, options = {}) {
-
     const allResponses = [];
 
     let response = await this.find(subReddit, criteria, options);
@@ -64,6 +63,7 @@ export class RedditService {
     let i = 0;
     while (
       json &&
+      json.data &&
       json.data.children.length > 0 &&
       json.data.after &&
       i < max

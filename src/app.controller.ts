@@ -7,6 +7,8 @@ import { StorageService } from './provider/storage/storage.service';
 import { temps } from './provider/storage/dtos/Paths';
 import { createReadStream } from 'fs';
 import { join } from 'path';
+import * as fs from 'node:fs';
+const path = require('path');
 
 @Controller()
 export class AppController {
@@ -54,7 +56,22 @@ export class AppController {
   @Get('/api/v1/reddit/:uuid')
   async show(@Param('uuid') uuid: string, @Res() res: Response) {
     const path = temps(uuid) + '.json';
-    const file = createReadStream(path);
-    file.pipe(res);
+
+    const exists = await this.storageService.checkExist(path);
+    if (!exists) {
+      res.status(HttpStatus.NOT_FOUND).json({
+        message: 'resource missing',
+      });
+      return;
+    }
+    try {
+      const file = createReadStream(path);
+      file.pipe(res);
+    } catch (e) {
+      console.log('errro', e);
+      res.status(HttpStatus.NOT_FOUND).json({
+        message: 'resource missing',
+      });
+    }
   }
 }
