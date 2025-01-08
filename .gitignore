@@ -56,3 +56,4 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /docker-compose.override.yml
 /prisma/migrations
+/src/storage/*
