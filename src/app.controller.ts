@@ -1,4 +1,13 @@
-import { Controller, Get, HttpStatus, Param, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Put,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response } from 'express';
 import { RedditService } from './provider/reddit/reddit.service';
@@ -6,9 +15,7 @@ import { extractPageOfPost } from './provider/reddit/tools';
 import { StorageService } from './provider/storage/storage.service';
 import { temps } from './provider/storage/dtos/Paths';
 import { createReadStream } from 'fs';
-import { join } from 'path';
-import * as fs from 'node:fs';
-const path = require('path');
+import { StoreBookDto } from './dtos/store-book.dto';
 
 @Controller()
 export class AppController {
@@ -72,6 +79,47 @@ export class AppController {
       res.status(HttpStatus.NOT_FOUND).json({
         message: 'resource missing',
       });
+    }
+  }
+  @Put('/api/v1/reddit/:uuid')
+  async update(
+    @Param('uuid') uuid: string,
+    @Res() res: Response,
+    @Body() storeBookDto: StoreBookDto,
+  ) {
+    const path = temps(uuid) + '.json';
+
+    const exists = await this.storageService.checkExist(path);
+    if (!exists) {
+      res.status(HttpStatus.NOT_FOUND).json({
+        message: 'resource missing',
+      });
+      return;
+    }
+    const options = {
+      title: storeBookDto.title,
+      author: storeBookDto.author,
+      cover: storeBookDto.cover,
+      description: storeBookDto.description,
+      content: storeBookDto.content.map((val) => {
+        return {
+          title: val.title.substring(0, 50),
+          author: val.author,
+          content: val.content,
+        };
+      }),
+    };
+
+    try {
+
+      const tempPath = temps( uuid+ '.json')
+      await this.storageService.save(tempPath, JSON.stringify(options));
+      const response = {
+        uuid,
+      };
+      res.status(HttpStatus.OK).json(response);
+    } catch (e) {
+      console.log(e);
     }
   }
 }
