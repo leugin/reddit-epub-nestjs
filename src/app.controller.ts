@@ -18,6 +18,7 @@ import { books, temps } from './provider/storage/dtos/Paths';
 import { createReadStream } from 'fs';
 import { StoreBookDto } from './dtos/store-book.dto';
 import epub from 'epub-gen-memory';
+import { readFileSync } from 'fs';
 
 @Controller()
 export class AppController {
@@ -58,7 +59,9 @@ export class AppController {
     const path = temps(uuid);
     await this.storageService.save(path + '.json', JSON.stringify(tempEpub));
     res.status(HttpStatus.OK).json({
-      uuid: uuid,
+      data: {
+        uuid: uuid,
+      },
     });
   }
 
@@ -74,8 +77,13 @@ export class AppController {
       return;
     }
     try {
-      const file = createReadStream(path);
-      file.pipe(res);
+      const fileContent = readFileSync(path, 'utf8'); // Lee el contenido del archivo
+      const jsonData = JSON.parse(fileContent); // Convierte el contenido en un objeto JSON
+
+      res.status(HttpStatus.OK).json({
+        data: jsonData,
+        message: 'resource missing',
+      });
     } catch (e) {
       console.log('errro', e);
       res.status(HttpStatus.NOT_FOUND).json({
