@@ -19,6 +19,7 @@ import { createReadStream } from 'fs';
 import { StoreBookDto } from './dtos/store-book.dto';
 import epub from 'epub-gen-memory';
 import { readFileSync } from 'fs';
+import { PrismaService } from './provider/prisma/prisma.service';
 
 @Controller()
 export class AppController {
@@ -26,6 +27,7 @@ export class AppController {
     private readonly appService: AppService,
     private readonly reeditService: RedditService,
     private readonly storageService: StorageService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   @Get()
@@ -112,46 +114,6 @@ export class AppController {
       });
     }
   }
-  @Put('/api/v1/reddit/:uuid')
-  async update(
-    @Param('uuid') uuid: string,
-    @Res() res: Response,
-    @Body() storeBookDto: StoreBookDto,
-  ) {
-    const path = temps(uuid) + '.json';
-
-    const exists = await this.storageService.checkExist(path);
-    if (!exists) {
-      res.status(HttpStatus.NOT_FOUND).json({
-        message: 'resource missing',
-      });
-      return;
-    }
-    const options = {
-      title: storeBookDto.title,
-      author: storeBookDto.author,
-      cover: storeBookDto.cover,
-      description: storeBookDto.description,
-      content: storeBookDto.content.map((val) => {
-        return {
-          title: val.title.substring(0, 50),
-          author: val.author,
-          content: val.content,
-        };
-      }),
-    };
-
-    try {
-      const tempPath = temps(uuid + '.json');
-      await this.storageService.save(tempPath, JSON.stringify(options));
-      const response = {
-        uuid,
-      };
-      res.status(HttpStatus.OK).json(response);
-    } catch (e) {
-      console.log(e);
-    }
-  }
   @Post('/api/v1/reddit/:uuid')
   async store(
     @Param('uuid') uuid: string,
@@ -190,6 +152,14 @@ export class AppController {
     };
 
     try {
+      const user = await this.prismaService.book.create({
+        data: {
+          title: storeBookDto.title,
+          author: storeBookDto.author,
+          cover: storeBookDto.cover,
+          description: storeBookDto.description,
+        },
+      });
       const tempPath = temps(uuid + '.json');
       await this.storageService.save(tempPath, JSON.stringify(options));
 
@@ -201,6 +171,8 @@ export class AppController {
       res.status(HttpStatus.OK).json({
         uuid: uuid,
         url: this.storageService.url(fileName),
+        user,
+        save: true,
       });
     } catch (e) {
       console.log(e);
