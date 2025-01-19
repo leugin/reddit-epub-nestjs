@@ -20,6 +20,7 @@ import { StoreBookDto } from './dtos/store-book.dto';
 import epub from 'epub-gen-memory';
 import { readFileSync } from 'fs';
 import { PrismaService } from './provider/prisma/prisma.service';
+import { BookRepositoryService } from './shared/repositories/book-repository/book-repository.service';
 
 @Controller()
 export class AppController {
@@ -27,7 +28,7 @@ export class AppController {
     private readonly appService: AppService,
     private readonly reeditService: RedditService,
     private readonly storageService: StorageService,
-    private readonly prismaService: PrismaService,
+    private readonly bookRepository: BookRepositoryService,
   ) {}
 
   @Get()
@@ -137,7 +138,8 @@ export class AppController {
         '.epub'
       );
     };
-    const options = {
+    const options: StoreBookDto = {
+      uuid: uuid,
       title: storeBookDto.title,
       author: storeBookDto.author,
       cover: storeBookDto.cover,
@@ -152,14 +154,7 @@ export class AppController {
     };
 
     try {
-      const user = await this.prismaService.book.create({
-        data: {
-          title: storeBookDto.title,
-          author: storeBookDto.author,
-          cover: storeBookDto.cover,
-          description: storeBookDto.description,
-        },
-      });
+      const user = await this.bookRepository.upsert(options);
       const tempPath = temps(uuid + '.json');
       await this.storageService.save(tempPath, JSON.stringify(options));
 
