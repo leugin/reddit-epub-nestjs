@@ -4,6 +4,7 @@ export class StoreBookContent {
   content: string;
 }
 export class StoreBookDto {
+  uuid: string;
   title: string;
   author: string;
   cover: string;

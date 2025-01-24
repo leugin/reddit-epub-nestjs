@@ -19,3 +19,24 @@ model User {
   name    String?
   password String?
 }
+
+model Book {
+  id      Int      @id @default(autoincrement())
+  uuid String @unique
+  title String
+  author String?
+  cover String?
+  description String?
+  contents BookContent[]
+
+}
+
+model BookContent{
+  id      Int      @id @default(autoincrement())
+  book_id Int
+  title String?
+  author String?
+  content String @db.Text
+  book Book @relation(fields: [book_id], references: [id])
+
+}
