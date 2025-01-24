@@ -68,6 +68,15 @@ export class AppController {
     });
   }
 
+  @Get('/api/v1/reddit/books')
+  async findBook(@Query('search') search: string | null, @Res() res: Response) {
+    const data = await this.bookRepository.findByText(search || null);
+    res.status(HttpStatus.OK).json({
+      data: data,
+      message: 'ok',
+    });
+  }
+
   @Get('/api/v1/reddit/:uuid')
   async show(@Param('uuid') uuid: string, @Res() res: Response) {
     const path = temps(uuid) + '.json';

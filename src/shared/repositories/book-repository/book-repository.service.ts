@@ -6,6 +6,42 @@ import { StoreBookDto } from '../../../dtos/store-book.dto';
 export class BookRepositoryService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findByText(text: string | null, pagination = { skip: 0, take: 10 }) {
+    let criteria: any = {
+      skip: pagination.skip,
+      take: pagination.take,
+    };
+    if (text) {
+      text = `%${text.trim()}%`;
+      criteria = {
+        ...criteria,
+        where: {
+          OR: [
+            {
+              title: {
+                contains: text,
+              },
+            },
+            {
+              author: {
+                contains: text,
+              },
+            },
+          ],
+        },
+      };
+    }
+    const total = await this.prisma.book.count(criteria);
+    const data = await this.prisma.book.findMany(criteria);
+    return Promise.resolve({
+      data,
+      meta: {
+        total,
+        page: Math.floor(pagination.skip / pagination.take) + 1,
+        last_page: Math.ceil(total / pagination.take),
+      },
+    });
+  }
   async create(data: StoreBookDto) {
     return this.prisma.book.create({
       data: {
