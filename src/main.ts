@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(bodyParser.json({ limit: '50mb' }));
   app.enableCors();
-
+  app.setGlobalPrefix('reddit-epub');
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
