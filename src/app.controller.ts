@@ -7,7 +7,7 @@ import {
   Post,
   Put,
   Query,
-  Res,
+  Res, UseGuards,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response } from 'express';
@@ -21,6 +21,7 @@ import epub from 'epub-gen-memory';
 import { readFileSync } from 'fs';
 import { PrismaService } from './provider/prisma/prisma.service';
 import { BookRepositoryService } from './shared/repositories/book-repository/book-repository.service';
+import AuthGuard from './shared/guards/auth.guard';
 
 @Controller()
 export class AppController {
@@ -68,6 +69,7 @@ export class AppController {
     });
   }
 
+  @UseGuards(AuthGuard)
   @Get('/api/v1/reddit/books')
   async findBook(@Query('search') search: string | null, @Res() res: Response) {
     const data = await this.bookRepository.findByText(search || null);
