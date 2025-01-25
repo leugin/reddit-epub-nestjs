@@ -4,11 +4,12 @@ import { UserRepositoryService } from '../../../shared/repositories/user-reposit
 import { Response } from 'express';
 import * as bcryptjs from 'bcryptjs';
 import { ResponseStatusCode } from '../../../shared/enums/response-status-code';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('api/v1/auth')
 export class LoginController {
 
-  constructor(private readonly userService: UserRepositoryService) {
+  constructor(private readonly userService: UserRepositoryService, private readonly jwt:JwtService) {
   }
   @Post('login')
   async loginByPassword(
@@ -29,10 +30,18 @@ export class LoginController {
     if (!isPasswordValid) {
       res.status(ResponseStatusCode.UNAUTHORIZED).json({
         message: 'unauthorized',
-      });    }
+      });
+      return;
+
+    }
 
     res.status(ResponseStatusCode.OK).json({
-      message: 'bad request',
+      access_token: await this.jwt.signAsync({
+        sub: user.id,
+        email: user.email,
+        name: user.name,
+      })
+
     });
   }
 }
