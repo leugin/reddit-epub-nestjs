@@ -17,4 +17,8 @@ export class UserRepositoryService {
     });
     return Promise.resolve(user);
   }
+
+  async findOne(params: any) {
+    return this.prismaService.user.findFirst(params);
+  }
 }
