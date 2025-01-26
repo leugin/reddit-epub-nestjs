@@ -7,7 +7,7 @@ import {
   Post,
   Put,
   Query,
-  Res,
+  Res, UseGuards,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response } from 'express';
@@ -21,6 +21,7 @@ import epub from 'epub-gen-memory';
 import { readFileSync } from 'fs';
 import { PrismaService } from './provider/prisma/prisma.service';
 import { BookRepositoryService } from './shared/repositories/book-repository/book-repository.service';
+import AuthGuard from './shared/guards/auth.guard';
 
 @Controller()
 export class AppController {
@@ -68,9 +69,10 @@ export class AppController {
     });
   }
 
+  @UseGuards(AuthGuard)
   @Get('/api/v1/reddit/books')
   async findBook(@Query('search') search: string | null, @Res() res: Response) {
-    const data = await this.bookRepository.findByText(search || null);
+    const data = await this.bookRepository.paginate({ search: search });
     res.status(HttpStatus.OK).json({
       data: data,
       message: 'ok',
@@ -135,17 +137,7 @@ export class AppController {
       date.getDay();
       // create epub
       const title = options.title.replaceAll(' ', '_').toLowerCase();
-      return (
-        date.getDay().toString() +
-        date.getMonth().toString() +
-        date.getFullYear().toString() +
-        date.getHours().toString() +
-        date.getMinutes().toString() +
-        date.getSeconds().toString() +
-        date.getMilliseconds().toString() +
-        title +
-        '.epub'
-      );
+      return title + '.epub';
     };
     const options: StoreBookDto = {
       uuid: uuid,
@@ -155,7 +147,7 @@ export class AppController {
       description: storeBookDto.description,
       content: storeBookDto.content.map((val) => {
         return {
-          title: val.title.substring(0, 50),
+          title: val.title ? val.title.substring(0, 50) : '-',
           author: val.author,
           content: val.content,
         };
