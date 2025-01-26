@@ -147,7 +147,7 @@ export class AppController {
       description: storeBookDto.description,
       content: storeBookDto.content.map((val) => {
         return {
-          title: val.title.substring(0, 50),
+          title: val.title ? val.title.substring(0, 50) : '-',
           author: val.author,
           content: val.content,
         };
