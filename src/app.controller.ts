@@ -72,7 +72,7 @@ export class AppController {
   @UseGuards(AuthGuard)
   @Get('/api/v1/reddit/books')
   async findBook(@Query('search') search: string | null, @Res() res: Response) {
-    const data = await this.bookRepository.findByText(search || null);
+    const data = await this.bookRepository.paginate({ search: search });
     res.status(HttpStatus.OK).json({
       data: data,
       message: 'ok',
@@ -137,17 +137,7 @@ export class AppController {
       date.getDay();
       // create epub
       const title = options.title.replaceAll(' ', '_').toLowerCase();
-      return (
-        date.getDay().toString() +
-        date.getMonth().toString() +
-        date.getFullYear().toString() +
-        date.getHours().toString() +
-        date.getMinutes().toString() +
-        date.getSeconds().toString() +
-        date.getMilliseconds().toString() +
-        title +
-        '.epub'
-      );
+      return title + '.epub';
     };
     const options: StoreBookDto = {
       uuid: uuid,

@@ -18,6 +18,8 @@ model User {
   email   String   @unique
   name    String?
   password String?
+  books Book[]
+
 }
 
 model Book {
@@ -28,6 +30,10 @@ model Book {
   cover String?
   description String?
   contents BookContent[]
+  created_by_id Int?
+  book User? @relation(fields: [created_by_id], references: [id])
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
 
 }
 
@@ -38,5 +44,7 @@ model BookContent{
   author String?
   content String @db.Text
   book Book @relation(fields: [book_id], references: [id])
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
 
 }
