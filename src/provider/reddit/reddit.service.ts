@@ -54,7 +54,7 @@ export class RedditService {
       },
     });
   }
-  async findAll(subReddit, criteria, options = {}) {
+  async findAll(subReddit: string, criteria: any, options = {}) {
     const allResponses = [];
 
     let response = await this.find(subReddit, criteria, options);
