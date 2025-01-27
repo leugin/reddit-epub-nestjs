@@ -46,7 +46,7 @@ export class BooksController {
     return this.booksDownloadService.invoke(filename, res);
   }
 
-  @Post('/api/v1/book/reddit/:uuid')
+  @Post('/:uuid')
   async store(@Param('uuid') uuid: string, @Body() storeBookDto: StoreBookDto) {
     const response = await this.booksStoreService.invoke(uuid, storeBookDto);
     return {

@@ -4,14 +4,12 @@ import { RedditFindAllService } from '../services/reddit-find-all/reddit-find-al
 
 @Controller()
 export class RedditController {
-  constructor(
-    private readonly findAllService: RedditFindAllService,
-   ) {}
+  constructor(private readonly findAllService: RedditFindAllService) {}
   @Get('/api/v1/reddit/find')
   async findAll(@Query() params: RedditFindDto) {
     const uuid = await this.findAllService.invoke(params);
     return {
-      uuid,
+      data: { uuid },
     };
   }
 }

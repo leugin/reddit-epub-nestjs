@@ -7,8 +7,10 @@ import { BookRepositoryService } from '../../../../shared/repositories/book-repo
 
 @Injectable()
 export class BooksStoreService {
-
-  constructor(private readonly storageService: StorageService, private readonly bookRepository: BookRepositoryService) {}
+  constructor(
+    private readonly storageService: StorageService,
+    private readonly bookRepository: BookRepositoryService,
+  ) {}
 
   async invoke(uuid: string, storeBookDto: StoreBookDto) {
     const getName = (options: any) => {
@@ -29,10 +31,10 @@ export class BooksStoreService {
         };
       }),
     };
-    const insert= {
-      ...options
-    }
-   await this.bookRepository.upsert(insert);
+    const insert = {
+      ...options,
+    };
+    await this.bookRepository.upsert(insert);
     const tempPath = temps(uuid + '.json');
     await this.storageService.save(tempPath, JSON.stringify(options));
 
@@ -45,6 +47,5 @@ export class BooksStoreService {
       uuid: uuid,
       url: this.storageService.url(fileName),
     };
-
   }
 }
