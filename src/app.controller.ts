@@ -36,38 +36,6 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-  @Get('/api/v1/reddit/find')
-  async findAll(
-    @Query('sub_reddit') subReddit: string,
-    @Query('search') search: string,
-    @Query('title') title: string,
-    @Res() res: Response,
-  ) {
-    const body = await this.reeditService.findAll(subReddit, search);
-    const clearedPost = [];
-    body.forEach((item) => {
-      const p = extractPageOfPost(item.data);
-      if (p === null) return;
-      clearedPost.push(p);
-    });
-    clearedPost.sort((a, b) => {
-      return a.created - b.created;
-    });
-
-    const tempEpub = {
-      title: clearedPost.length > 0 ? clearedPost[0].title : title,
-      author: clearedPost.length > 0 ? clearedPost[0].author : subReddit,
-      content: clearedPost,
-    };
-    const uuid = Math.random().toString(36).substring(2, 15);
-    const path = temps(uuid);
-    await this.storageService.save(path + '.json', JSON.stringify(tempEpub));
-    res.status(HttpStatus.OK).json({
-      data: {
-        uuid: uuid,
-      },
-    });
-  }
 
   @UseGuards(AuthGuard)
   @Get('/api/v1/reddit/books')
@@ -79,7 +47,7 @@ export class AppController {
     });
   }
 
-  @Get('/api/v1/reddit/:uuid')
+  @Get('/api/v1/reddit/book/:uuid')
   async show(@Param('uuid') uuid: string, @Res() res: Response) {
     const path = temps(uuid) + '.json';
 
@@ -105,7 +73,7 @@ export class AppController {
       });
     }
   }
-  @Get('/api/v1/reddit/download/:filename')
+  @Get('/api/v1/reddit/book/download/:filename')
   async download(@Param('filename') filename: string, @Res() res: Response) {
     const path = books(filename);
 
