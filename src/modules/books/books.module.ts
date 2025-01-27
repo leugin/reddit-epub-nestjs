@@ -4,6 +4,7 @@ import { BookRepositoryService } from '../../shared/repositories/book-repository
 import { PrismaService } from '../../provider/prisma/prisma.service';
 import { BooksFindUuidService } from './services/books-find-uuid/books-find-uuid.service';
 import { StorageService } from '../../provider/storage/storage.service';
+import { BooksDownloadService } from './services/books-download/books-download.service';
 
 @Module({
   providers: [
@@ -11,6 +12,7 @@ import { StorageService } from '../../provider/storage/storage.service';
     StorageService,
     BookRepositoryService,
     BooksFindUuidService,
+    BooksDownloadService,
   ],
   controllers: [BooksController],
 })

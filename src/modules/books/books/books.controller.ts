@@ -1,13 +1,18 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Query, Res, UseGuards } from '@nestjs/common';
 import AuthGuard from '../../../shared/guards/auth.guard';
 import { BookRepositoryService } from '../../../shared/repositories/book-repository/book-repository.service';
 import { BooksFindUuidService } from '../services/books-find-uuid/books-find-uuid.service';
+import { Response } from 'express';
+import { books } from '../../../provider/storage/dtos/Paths';
+import { createReadStream } from 'fs';
+import { BooksDownloadService } from '../services/books-download/books-download.service';
 
 @Controller('/api/v1/reddit/books')
 export class BooksController {
   constructor(
     private readonly bookRepository: BookRepositoryService,
     private readonly booksFindUuidService: BooksFindUuidService,
+    private readonly booksDownloadService: BooksDownloadService,
   ) {}
   @UseGuards(AuthGuard)
   @Get('/')
@@ -25,5 +30,9 @@ export class BooksController {
       data: book,
       message: 'ok',
     };
+  }
+  @Get('download/:filename')
+  async download(@Param('filename') filename: string, @Res() res: Response) {
+    return this.booksDownloadService.invoke(filename, res);
   }
 }

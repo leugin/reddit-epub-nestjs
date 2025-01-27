@@ -29,27 +29,7 @@ export class AppController {
   }
 
 
-  @Get('/api/v1/reddit/book/download/:filename')
-  async download(@Param('filename') filename: string, @Res() res: Response) {
-    const path = books(filename);
 
-    const exists = await this.storageService.checkExist(path);
-    if (!exists) {
-      res.status(HttpStatus.NOT_FOUND).json({
-        message: 'resource missing' + path,
-      });
-      return;
-    }
-    try {
-      const file = createReadStream(path);
-      file.pipe(res);
-    } catch (e) {
-      console.log('errro', e);
-      res.status(HttpStatus.NOT_FOUND).json({
-        message: 'resource missing',
-      });
-    }
-  }
   @Post('/api/v1/book/reddit/:uuid')
   async store(
     @Param('uuid') uuid: string,
