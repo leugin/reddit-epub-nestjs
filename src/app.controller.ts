@@ -28,32 +28,7 @@ export class AppController {
     return 'hello';
   }
 
-  @Get('/api/v1/reddit/book/:uuid')
-  async show(@Param('uuid') uuid: string, @Res() res: Response) {
-    const path = temps(uuid) + '.json';
 
-    const exists = await this.storageService.checkExist(path);
-    if (!exists) {
-      res.status(HttpStatus.NOT_FOUND).json({
-        message: 'resource missing',
-      });
-      return;
-    }
-    try {
-      const fileContent = readFileSync(path, 'utf8'); // Lee el contenido del archivo
-      const jsonData = JSON.parse(fileContent); // Convierte el contenido en un objeto JSON
-
-      res.status(HttpStatus.OK).json({
-        data: jsonData,
-        message: 'resource missing',
-      });
-    } catch (e) {
-      console.log('errro', e);
-      res.status(HttpStatus.NOT_FOUND).json({
-        message: 'resource missing',
-      });
-    }
-  }
   @Get('/api/v1/reddit/book/download/:filename')
   async download(@Param('filename') filename: string, @Res() res: Response) {
     const path = books(filename);
