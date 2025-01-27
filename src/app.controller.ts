@@ -5,46 +5,27 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
-  Query,
-  Res, UseGuards,
+  Res,
 } from '@nestjs/common';
-import { AppService } from './app.service';
 import { Response } from 'express';
-import { RedditService } from './provider/reddit/reddit.service';
-import { extractPageOfPost } from './provider/reddit/tools';
 import { StorageService } from './provider/storage/storage.service';
 import { books, temps } from './provider/storage/dtos/Paths';
 import { createReadStream } from 'fs';
 import { StoreBookDto } from './dtos/store-book.dto';
 import epub from 'epub-gen-memory';
 import { readFileSync } from 'fs';
-import { PrismaService } from './provider/prisma/prisma.service';
 import { BookRepositoryService } from './shared/repositories/book-repository/book-repository.service';
-import AuthGuard from './shared/guards/auth.guard';
 
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
-    private readonly reeditService: RedditService,
     private readonly storageService: StorageService,
     private readonly bookRepository: BookRepositoryService,
   ) {}
 
   @Get()
   getHello(): string {
-    return this.appService.getHello();
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('/api/v1/reddit/books')
-  async findBook(@Query('search') search: string | null, @Res() res: Response) {
-    const data = await this.bookRepository.paginate({ search: search });
-    res.status(HttpStatus.OK).json({
-      data: data,
-      message: 'ok',
-    });
+    return 'hello';
   }
 
   @Get('/api/v1/reddit/book/:uuid')
@@ -94,7 +75,7 @@ export class AppController {
       });
     }
   }
-  @Post('/api/v1/reddit/:uuid')
+  @Post('/api/v1/book/reddit/:uuid')
   async store(
     @Param('uuid') uuid: string,
     @Res() res: Response,
