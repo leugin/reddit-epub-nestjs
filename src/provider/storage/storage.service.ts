@@ -26,7 +26,7 @@ export class StorageService {
     });
   }
 
-  url(path: string) {
+  async url(path: string) {
     return `${process.env.STORAGE_URL}/${path}`;
   }
 }

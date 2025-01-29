@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { StoreBookDto } from '../../../../dtos/store-book.dto';
 import { books, temps } from '../../../../provider/storage/dtos/Paths';
 import epub from 'epub-gen-memory';
@@ -44,8 +44,10 @@ export class BooksStoreService {
 
     await this.storageService.save(path, epu);
     return {
-      uuid: uuid,
-      url: this.storageService.url(fileName),
+      data: {
+        uuid: uuid,
+        url: await this.storageService.url(path),
+      },
     };
   }
 }

@@ -6,11 +6,15 @@ import { BooksFindUuidService } from './services/books-find-uuid/books-find-uuid
 import { StorageService } from '../../provider/storage/storage.service';
 import { BooksDownloadService } from './services/books-download/books-download.service';
 import { BooksStoreService } from './services/books-store/books-store.service';
+import { AwsStorageService } from '../../provider/storage/aws-storage.service';
 
 @Module({
   providers: [
     PrismaService,
-    StorageService,
+    {
+      provide: StorageService,
+      useClass: AwsStorageService,
+    },
     BookRepositoryService,
     BooksFindUuidService,
     BooksDownloadService,
