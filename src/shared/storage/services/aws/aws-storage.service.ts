@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { getUrl, save as SaveFile } from './index';
+import { get, getUrl, save as SaveFile } from './index';
 import { AbstractStorageService } from '../abstract-storage.service';
 @Injectable()
 export class AwsStorageService extends AbstractStorageService {
@@ -25,4 +25,8 @@ export class AwsStorageService extends AbstractStorageService {
       useClass: AwsStorageService,
     };
   };
+
+  async getFile(path: string): Promise<string> {
+    return await get(path);
+  }
 }
