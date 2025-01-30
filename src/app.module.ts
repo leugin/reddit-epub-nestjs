@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { RedditService } from './provider/reddit/reddit.service';
 import { ConfigModule } from '@nestjs/config';
-import { StorageService } from './provider/storage/storage.service';
 import { RepositoriesModule } from './shared/repositories/repositories.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -10,6 +9,7 @@ import { RedditModule } from './modules/reddit/reddit.module';
 import { BooksModule } from './modules/books/books.module';
 import * as process from 'node:process';
 import { PrismaService } from './provider/prisma/prisma.service';
+import { StorageModule } from './shared/storage/storage.module';
 
 @Module({
   imports: [
@@ -27,8 +27,9 @@ import { PrismaService } from './provider/prisma/prisma.service';
     }),
     RedditModule,
     BooksModule,
+    StorageModule,
   ],
   controllers: [AppController],
-  providers: [PrismaService, RedditService, StorageService],
+  providers: [PrismaService, RedditService],
 })
 export class AppModule {}

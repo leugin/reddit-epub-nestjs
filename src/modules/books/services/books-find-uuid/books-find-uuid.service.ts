@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { temps } from '../../../../provider/storage/dtos/Paths';
+import { temps } from '../../../../shared/storage/dtos/Paths';
 import { readFileSync } from 'fs';
-import { StorageService } from '../../../../provider/storage/storage.service';
+import { AbstractStorageService } from '../../../../shared/storage/services/abstract-storage.service';
 
 @Injectable()
 export class BooksFindUuidService {
-  constructor(private readonly storageService: StorageService) {}
+  constructor(private readonly storageService: AbstractStorageService) {}
 
   async invoke(uuid: string) {
     const path = temps(uuid) + '.json';

@@ -1,6 +1,6 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { credentials as s3Credentials} from './aws-credentials';
+import { credentials as s3Credentials } from './aws-credentials';
 const createPresignedUrlWithClient = async (key: string) => {
   // Inicializa el cliente con la región y las credenciales
   const client = new S3Client({

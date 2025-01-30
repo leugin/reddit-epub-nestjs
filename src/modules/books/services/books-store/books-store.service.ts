@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { StoreBookDto } from '../../../../dtos/store-book.dto';
-import { books, temps } from '../../../../provider/storage/dtos/Paths';
+import { books, temps } from '../../../../shared/storage/dtos/Paths';
 import epub from 'epub-gen-memory';
-import { StorageService } from '../../../../provider/storage/storage.service';
 import { BookRepositoryService } from '../../../../shared/repositories/book-repository/book-repository.service';
+import { AbstractStorageService } from '../../../../shared/storage/services/abstract-storage.service';
 
 @Injectable()
 export class BooksStoreService {
   constructor(
-    private readonly storageService: StorageService,
+    private readonly storage: AbstractStorageService,
     private readonly bookRepository: BookRepositoryService,
   ) {}
 
@@ -36,17 +36,17 @@ export class BooksStoreService {
     };
     await this.bookRepository.upsert(insert);
     const tempPath = temps(uuid + '.json');
-    await this.storageService.save(tempPath, JSON.stringify(options));
+    await this.storage.save(tempPath, JSON.stringify(options));
 
     const epu = await epub(options, options.content);
     const fileName = getName(options);
     const path = books(fileName);
 
-    await this.storageService.save(path, epu);
+    await this.storage.save(path, epu);
     return {
       data: {
         uuid: uuid,
-        url: await this.storageService.url(path),
+        url: await this.storage.url(path),
       },
     };
   }
