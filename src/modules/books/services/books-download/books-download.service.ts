@@ -1,12 +1,12 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { StorageService } from '../../../../provider/storage/storage.service';
-import { books } from '../../../../provider/storage/dtos/Paths';
+import { books } from '../../../../shared/storage/dtos/Paths';
 import { createReadStream } from 'fs';
 import { Response } from 'express';
+import { AbstractStorageService } from '../../../../shared/storage/services/abstract-storage.service';
 
 @Injectable()
 export class BooksDownloadService {
-  constructor(private readonly storageService: StorageService) {}
+  constructor(private readonly storageService: AbstractStorageService) {}
   async invoke(filename: string, res: Response) {
     const path = books(filename);
 

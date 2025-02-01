@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { clearPost, createTempEpub } from '../../tools/reddit-tools';
 import * as crypto from 'crypto';
-import { temps } from '../../../../provider/storage/dtos/Paths';
+import { temps } from '../../../../shared/storage/dtos/Paths';
 import { RedditService } from '../../../../provider/reddit/reddit.service';
-import { StorageService } from '../../../../provider/storage/storage.service';
 import RedditFindDto from '../../dtos/reddit-find.dto';
+import { AbstractStorageService } from '../../../../shared/storage/services/abstract-storage.service';
 
 @Injectable()
 export class RedditFindAllService {
   constructor(
     private readonly reeditService: RedditService,
-    private readonly storageService: StorageService,
+    private readonly storageService: AbstractStorageService,
   ) {}
   async invoke(params: RedditFindDto) {
     const body = await this.reeditService.findAll(

@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { temps } from '../../../../provider/storage/dtos/Paths';
-import { readFileSync } from 'fs';
-import { StorageService } from '../../../../provider/storage/storage.service';
+import { temps } from '../../../../shared/storage/dtos/Paths';
+import { AbstractStorageService } from '../../../../shared/storage/services/abstract-storage.service';
 
 @Injectable()
 export class BooksFindUuidService {
-  constructor(private readonly storageService: StorageService) {}
+  constructor(private readonly storageService: AbstractStorageService) {}
 
   async invoke(uuid: string) {
     const path = temps(uuid) + '.json';
@@ -15,7 +14,7 @@ export class BooksFindUuidService {
       throw new NotFoundException('resource missing');
     }
     try {
-      const fileContent = readFileSync(path, 'utf8'); // Lee el contenido del archivo
+      const fileContent = await this.storageService.getFile(path);
       return JSON.parse(fileContent); // Convierte el contenido en un objeto JSON
     } catch (e) {
       console.log('errro', e);
