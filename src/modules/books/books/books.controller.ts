@@ -15,6 +15,7 @@ import { Response } from 'express';
 import { BooksDownloadService } from '../services/books-download/books-download.service';
 import { StoreBookDto } from '../../../dtos/store-book.dto';
 import { BooksStoreService } from '../services/books-store/books-store.service';
+import { ActiveUser } from '../../../../dist/shared/decorators/active-user/active-user';
 
 @Controller('/api/v1/reddit/books')
 export class BooksController {
@@ -26,8 +27,14 @@ export class BooksController {
   ) {}
   @UseGuards(AuthGuard)
   @Get('/')
-  async findBook(@Query('search') search: string | null) {
-    const data = await this.bookRepository.paginate({ search: search });
+  async findBook(
+    @ActiveUser() payload: any,
+    @Query('search') search: string | null,
+  ) {
+    const data = await this.bookRepository.paginate({
+     // search: search,
+      created_by_id: payload.sub,
+    });
     return {
       data: data,
       message: 'ok',
@@ -45,9 +52,14 @@ export class BooksController {
   async download(@Param('filename') filename: string, @Res() res: Response) {
     return this.booksDownloadService.invoke(filename, res);
   }
-
+  @UseGuards(AuthGuard)
   @Post('/:uuid')
-  async store(@Param('uuid') uuid: string, @Body() storeBookDto: StoreBookDto) {
+  async store(
+    @ActiveUser() payload: any,
+    @Param('uuid') uuid: string,
+    @Body() storeBookDto: StoreBookDto,
+  ) {
+    storeBookDto.created_by_id = payload.sub;
     const response = await this.booksStoreService.invoke(uuid, storeBookDto);
     return {
       data: response,

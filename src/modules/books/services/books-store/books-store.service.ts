@@ -23,6 +23,7 @@ export class BooksStoreService {
       author: storeBookDto.author,
       cover: storeBookDto.cover,
       description: storeBookDto.description,
+      created_by_id: storeBookDto.created_by_id,
       content: storeBookDto.content.map((val) => {
         return {
           title: val.title ? val.title.substring(0, 50) : '-',

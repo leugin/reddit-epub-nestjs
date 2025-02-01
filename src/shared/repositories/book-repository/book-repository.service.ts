@@ -10,7 +10,9 @@ export class BookRepositoryService {
     let criteria: any = {
       skip: pagination.skip,
       take: pagination.take,
+      where: {},
     };
+
     if (options.search) {
       const text = `%${options.search.trim()}%`;
       criteria = {
@@ -31,6 +33,11 @@ export class BookRepositoryService {
         },
       };
     }
+    if (options.created_by_id) {
+      criteria.where.created_by_id = options.created_by_id;
+    }
+    console.log(options);
+    console.log(criteria.where);
     const total = await this.prisma.book.count(criteria);
     const data = await this.prisma.book.findMany(criteria);
     return Promise.resolve({
@@ -114,12 +121,14 @@ export class BookRepositoryService {
           author: data.author,
           cover: data.cover,
           description: data.description,
+          created_by_id: data.created_by_id,
         },
         update: {
           title: data.title,
           author: data.author,
           cover: data.cover,
           description: data.description,
+          created_by_id: data.created_by_id,
         },
       });
 
