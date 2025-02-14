@@ -6,6 +6,7 @@ import { BooksFindUuidService } from './services/books-find-uuid/books-find-uuid
 import { BooksDownloadService } from './services/books-download/books-download.service';
 import { BooksStoreService } from './services/books-store/books-store.service';
 import { StorageModule } from '../../shared/storage/storage.module';
+import { BooksUpdateService } from './services/books-update/books-update.service';
 
 @Module({
   providers: [
@@ -14,6 +15,7 @@ import { StorageModule } from '../../shared/storage/storage.module';
     BooksFindUuidService,
     BooksDownloadService,
     BooksStoreService,
+    BooksUpdateService,
   ],
   controllers: [BooksController],
   imports: [StorageModule],

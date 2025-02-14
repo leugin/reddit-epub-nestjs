@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Param,
-  Post,
+  Post, Put,
   Query,
   Res,
   UseGuards,
@@ -15,7 +15,7 @@ import { Response } from 'express';
 import { BooksDownloadService } from '../services/books-download/books-download.service';
 import { StoreBookDto } from '../../../dtos/store-book.dto';
 import { BooksStoreService } from '../services/books-store/books-store.service';
-import { ActiveUser } from '../../../../dist/shared/decorators/active-user/active-user';
+import { ActiveUser } from '../../../shared/decorators/active-user/active.user';
 
 @Controller('/api/v1/reddit/books')
 export class BooksController {
@@ -32,7 +32,7 @@ export class BooksController {
     @Query('search') search: string | null,
   ) {
     const data = await this.bookRepository.paginate({
-     // search: search,
+      // search: search,
       created_by_id: payload.sub,
     });
     return {
@@ -55,6 +55,20 @@ export class BooksController {
   @UseGuards(AuthGuard)
   @Post('/:uuid')
   async store(
+    @ActiveUser() payload: any,
+    @Param('uuid') uuid: string,
+    @Body() storeBookDto: StoreBookDto,
+  ) {
+    storeBookDto.created_by_id = payload.sub;
+    const response = await this.booksStoreService.invoke(uuid, storeBookDto);
+    return {
+      data: response,
+      message: 'ok',
+    };
+  }
+  @UseGuards(AuthGuard)
+  @Put('/:uuid')
+  async update(
     @ActiveUser() payload: any,
     @Param('uuid') uuid: string,
     @Body() storeBookDto: StoreBookDto,
