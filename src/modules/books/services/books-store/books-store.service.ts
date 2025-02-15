@@ -45,10 +45,8 @@ export class BooksStoreService {
 
     await this.storage.save(path, epu);
     return {
-      data: {
-        uuid: uuid,
-        url: await this.storage.url(path),
-      },
+      uuid: uuid,
+      url: await this.storage.url(path),
     };
   }
 }
